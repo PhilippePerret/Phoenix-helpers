@@ -1,0 +1,108 @@
+<h1>Phoenix/Elixir<br/>Essai des helpers de vues personnalisés</h1>
+
+<h2>Présentation</h2>
+
+<p>Cette application et cette page ont été créées pour essayer les helpers de vue à l'aide des <em>fonctions</em> et des <em>composant HEEX</em>.</p>
+
+<p>Deux natures de fichiers</p>
+<ol>
+  <li>Les modules de vue normaux (<code>page_html.ex</code> ici).</li>
+  <li>Les modules dans un fichier séparé, dédié, chargé par tous les modules de vue.</li>
+</ol>
+
+<p>Deux natures d'helpers :</p>
+<ul>
+  <li>Par <b>fonction</b>, qui sera utilisé entre <code>&lt;%= ... %></code>,</li>
+  <li>Par <b>composant HEEX</b> qui sera utilisé avec <code>&lt;.&lt;fonction var=valeur var=valeur .../></code></li>
+</ul>
+
+<h2>Fichiers d'helper</h2>
+
+<p>Le fichier <code>helpers.ex</code> est créé dans <code>helps_web/</code>.</p>
+<p>Il contient (note : le fichier est lu, donc il contient vraiment ce code) :</p>
+<p class="file">
+  <%= File.read!("./lib/helps_web/helpers.ex") %>
+</p>
+
+<p>Le fichier <code>page_html.ex</code> quant à lui, contient :</p>
+<p class="file">
+  <%= File.read!("./lib/helps_web/controllers/page_html.ex") %>
+</p>
+
+<h2>Utilisation des fonctions</h2>
+
+<h3>Avec des fonctions</h3>
+
+<p>Si j'appelle la fonction <code>bonjour</code> avec le code :</p>
+
+
+<p class="c">&lt;p>&lt;%= bonjour() %>&lt;/p></p>
+
+<p>Ça donne ça :</p>
+
+<p class="resultat"><%= bonjour() %></p>
+
+<blockquote>On note que c'est la méthode dans le module de page (<code>page_html class="ex"</code> qui l'emporte sur la fonction définie dans l'helper général.</blockquote>
+
+<p>Je peux bien sûr faire une fonction avec des paramètres. Le code…</p>
+
+<p class="c">&lt;p>« &lt;%= ajoute_en_pourcentage(32) %> »&lt;/p></p>
+
+<p>… va produire :</p>
+
+<p class="resultat">« <%= ajoute_en_pourcentage(32) %> »</p>
+
+<h3>Avec des <b>composants HEEX</b></h3>
+
+<p>J'ai défini un autre fichier <code>composants_heex.ex</code> dans le dossier <code>helps_web/components</code> (mais j'aurais pu le mettre ailleurs) qui contient : </p>
+
+<p class="file">
+  <%= File.read!("./lib/helps_web/components/composants_heex.ex") %>
+</p>
+
+<p>Ce module doit être ajouté dans la fonction <code>html_helpers</code> de <code>lib/helps_web</code> :</p>
+
+<p class="c">
+  ...
+  defp html_helpers do
+    quote do
+      # HTML escaping functionality
+      import Phoenix.HTML
+      # Core UI components and translation
+      import HelpsWeb.CoreComponents
+      import HelpsWeb.ComposantsPerso # &lt;=== ICI
+      import HelpsWeb.Gettext
+  ...
+</p>
+
+<p>Si j'utilise le code :</p>
+
+<p class="c">&lt;p>« &lt;.dit_bonjour/> »&lt;/p></p>
+
+<p>… ça va produire : </p>
+
+<p class="resultat"><.dit_bonjour/></p>
+
+<p>Si j'utilise le code :</p>
+
+<p class="c">&lt;p>« &lt;.dit_bonjour name="Phil" /> »&lt;/p></p>
+
+<p>… ça va produire : </p>
+
+<p class="resultat">« <.dit_bonjour name="Phil" /> »</p>
+
+<h3>À noter</h3>
+
+<ul>
+  <li>Noter que dans le composant HEEX, il est obligatoire d'utiliser <code>~H"..."</code> pour définir le code.</li>
+  <li>Bien noter, dans le module <code>HelpsWeb.ComposantsPerso</code> comment la donnée <code>name</code> est attendue et comment on lui défini une valeur par défaut.</li>
+  <li>Noter aussi le <code>use Phoenix.Component</code> qui permet de définir ces composants HEEX.</li>
+  <li>Noter le paramètre <code>assigns</code> en premier paramètre des composants HEEX qui est obligatoire pour en tirer les variables.</li>
+  <li>Noter qu'on peut utiliser d'autres variables, mais qu'elles ne doivent pas être appelées par <code>@</code> si elles ne se trouvent pas toujours là et ne sont pas définis par <code>attr</code>. Par exemple :
+
+    <p class="c">&lt;p>« &lt;.dit_bonjour name="Phil" point="?" /> »&lt;/p></p>
+    
+    <p>… qui va produire : </p>
+    
+    <p class="resultat">« <.dit_bonjour name="Phil" point="?" /> »</p></li>
+</ul>

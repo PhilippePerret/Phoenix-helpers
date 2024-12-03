@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en" class="[scrollbar-gutter:stable]">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="csrf-token" content={get_csrf_token()} />
+    <.live_title suffix=" · Phoenix Framework">
+      <%= assigns[:page_title] || "Helps" %>
+    </.live_title>
+    <link phx-track-static rel="stylesheet" href={~p"/assets/app.css"} />
+    <script defer phx-track-static type="text/javascript" src={~p"/assets/app.js"}>
+    </script>
+    <style type="text/css">
+      body {
+        max-width: 740px;
+        font-size: 16pt;
+      }
+      p.resultat {
+        padding:1em;
+        background-color: aquamarine;
+      }
+      p.c, p.file {
+        white-space: pre;
+        font-family: 'Courier New', Courier, monospace;
+        color: white;
+        padding:1em;
+
+      }
+      p.file {
+        background-color: #333;
+      }
+      p.c {
+        background-color: black;
+      }
+
+      blockquote {
+        font-style: italic;
+      }
+    </style>
+  </head>
+  <body class="bg-white">
+    <%= @inner_content %>
+  </body>
+</html>
